@@ -1,66 +1,367 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<p style="text-align: center; padding: 3rem;"><img src="./logo.jpg" width="150" alt="Laravel world"/></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+The World is a Laravel package which provides a list of the countries, states, cities, timezones, currencies and languages.
 
-## About Laravel
+It can be consumed with the World Facade or the defined API routes.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Installation
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+```bash
+set APP_ENV=local
+composer require nnjeim/world
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+set the ENV variable WORLD_DB_CONNECTION to the desired database connection (optional)  
 
-## Learning Laravel
+The `world:install` command is a helper to automate the installation process
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```
+php artisan world:install
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Optionally you can manually install the package by following the below steps:
+```bash
+php artisan vendor:publish --tag=world
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+php artisan migrate
 
-## Laravel Sponsors
+php artisan db:seed --class=WorldSeeder # (requires ~15min)
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### What's new in v1.1.31?  
+- Addition of the  fa locale @DevNull-IR
+- Addition of cities from Malaysia @hirenkeraliya
 
-### Premium Partners
+### Changelog
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Please read [CHANGELOG](CHANGELOG.md) for more information of what was changed recently. 
 
-## Contributing
+### Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Please read [CONTRIBUTING](CONTRIBUTING.md) for more details.
 
-## Code of Conduct
+### Demo
+Please feel free to query https://laravel-world.com 
+  
+Examples  
+https://laravel-world.com/api/countries  
+https://laravel-world.com/api/countries?search=rom  
+https://laravel-world.com/api/states?filters[country_code]=RO&fields=cities  
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Usage
 
-## Security Vulnerabilities
+#### List all the countries
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Use the `World` facade:
 
-## License
+```php
+use Nnjeim\World\World;
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+$action =  World::countries();
+
+if ($action->success) {
+  $countries = $action->data;
+}
+
+response (object)
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "Afghanistan"
+    },
+    {
+      "id": 2,
+      "name": "Åland Islands"
+    },
+    .
+    .
+    .
+  ],
+}
+``` 
+
+Use the API countries endpoint:
+
+```
+https://myDomain.local/api/countries
+```
+
+#### Fetch a country with its states and cities.
+
+Use the `World` facade:
+
+```php
+use Nnjeim\World\World;
+
+$action =  World::countries([
+	'fields' => 'states,cities',
+	'filters' => [
+		'iso2' => 'FR',
+	]
+]);
+
+if ($action->success) {
+
+	$countries = $action->data;
+}
+```
+
+Response: 
+```
+(object)
+{
+  "success": true,
+  "data": [
+    "id": 77,
+    "name": "France",
+    "states": [
+        {
+          "id": 1271,
+          "name": "Alo"
+        },
+        {
+          "id": 1272,
+          "name": "Alsace"
+        },
+        .
+        .
+        .
+    ],
+    "cities": [
+        {
+          "id": 25148,
+          "name": "Abondance"
+        },
+        {
+          "id": 25149,
+          "name": "Abrest"
+        },
+        .
+        .
+        .
+      ]
+    ],
+}
+```
+
+Use the API countries endpoint:
+
+```
+https://myDomain.local/api/countries?fields=states,cities&filters[iso2]=FR
+```
+
+#### List all the cities by country id
+
+```php
+use Nnjeim\World\WorldHelper;
+
+new class {
+    protected $world;
+    
+    public function __construct(WorldHelper $world) {
+        $this->world = $world;
+    }
+    
+    $action = $this->world->cities([
+        'filters' => [
+            'country_id' => 182,
+        ],
+    ]);
+    
+    if ($action->success) {
+        $cities = $action->data;
+    }
+}
+```
+
+Use the API cities endpoint:
+
+```
+https://myDomain.local/api/cities?filters[country_code]=RO 
+```
+
+### Available actions
+
+| Name       | Description                   |
+|:-----------|:------------------------------|
+| countries  | lists all the world countries |
+| states     | lists all the states          |
+| cities     | lists all the cities          |
+| timezones  | lists all the timezones       |
+| currencies | lists all the currencies      |
+| languages  | lists all the languages       |
+
+An action response is formed as below:
+
+* `success` (boolean)
+* `message` (string)
+* `data` (instance of `Illuminate\Support\Collection`)
+* `errors` (array)
+
+#### Countries action
+
+* `fields`*: comma seperated string (countries table fields in addition to states, cities, currency and timezones).
+* `filters`*: array of keys (countries table fields) and their corresponding values.
+* `search`*: string.
+
+#### States action
+
+* `fields`*: comma seperated string (states table fields in addition to country and states).
+* `filters`*: array of keys (states table fields) and their corresponding values.
+* `search`*: string.
+
+#### Cities action
+
+* `fields`*: comma seperated string (cities table fields in addition to country and state).
+* `filters`*: array of keys (cities table fields) and their corresponding values.
+* `search`*: string.
+
+#### Timezones action
+
+* `fields`*: comma seperated string (timezones table fields in addition to country).
+* `filters`*: array of keys (timezones table fields) and their corresponding values.
+* `search`*: string.
+
+#### Currencies action
+
+* `fields`*: comma seperated string (currencies table fields in addition to country).
+* `filters`*: array of keys (currencies table fields) and their corresponding values.
+* `search`*: string.
+
+#### Languages action
+
+* `fields`*: comma seperated string (languages table fields).
+* `filters`*: array of keys (languages table fields) and their corresponding values.
+* `search`*: string.
+
+### Available API routes
+
+All routes can be prefixed by any string. Ex.: `admin`, `api`...
+
+#### Countries
+
+|             |                                                                                                                                     |
+|:------------|:------------------------------------------------------------------------------------------------------------------------------------|
+| Method      | GET                                                                                                                                 |
+| Route       | `/{prefix}/countries`                                                                                                               |
+| Parameters* | comma seperated fields (countries table fields in addition to states, cities, currency and timezones), array filters, string search |
+| Example     | `/api/countries?fields=iso2,cities&filters[phone_code]=44  `                                                                        |   
+| response    | success, message, data                                                                                                              |  
+
+#### States
+
+|             |                                                                                                              |
+|:------------|:-------------------------------------------------------------------------------------------------------------|
+| Method      | GET                                                                                                          |
+| Route       | `/{prefix}/states`                                                                                           |
+| Parameters* | comma seperated fields (states table fields in addition to country and cities), array filters, string search |
+| Example     | `/api/states?fields=country,cities&filters[country_code]=RO`                                                 |   
+| response    | success, message, data                                                                                       |   
+
+#### Cities
+
+|             |                                                                                                             |
+|:------------|:------------------------------------------------------------------------------------------------------------|
+| Method      | GET                                                                                                         |
+| Route       | `/{prefix}/cities`                                                                                          |
+| Parameters* | comma seperated fields (cities table fields in addition to country and state), array filters, string search |
+| Example     | `/api/cities?fields=country,state&filters[country_code]=RO`                                                 |   
+| response    | success, message, data                                                                                      | 
+
+#### Timezones
+
+|             |                                                                                                          |
+|:------------|:---------------------------------------------------------------------------------------------------------|
+| Method      | GET                                                                                                      |
+| Route       | `/{prefix}/timezones`                                                                                    |
+| Parameters* | comma seperated fields (timezones table fields in addition to the country), array filters, string search |
+| Example     | `/api/timezones?fields=country&filters[country_code]=RO`                                                 |   
+| response    | success, message, data                                                                                   | 
+
+#### Currencies
+
+|             |                                                                                                           |
+|:------------|:----------------------------------------------------------------------------------------------------------|
+| Method      | GET                                                                                                       |
+| Route       | `/{prefix}/currencies`                                                                                    |
+| Parameters* | comma seperated fields (currencies table fields in addition to the country), array filters, string search |
+| Example     | `/api/currencies?fields=code&filters[country_code]=RO`                                                    |   
+| response    | success, message, data                                                                                    |
+
+#### Languages
+
+|             |                                       |
+|:------------|:--------------------------------------|
+| Method      | GET                                   |
+| Route       | `/{prefix}/languages`                 |
+| Parameters* | comma seperated fields, string search |
+| Example     | `/api/languages?fields=dir`           |   
+| response    | success, message, data                |
+
+### Localization
+
+The available locales are ar, bn, br, de, en, es, fr, it, ja, kr, nl, pl, pt, ro, ru, tr and zh.  
+The default locale is en.
+
+Include in the request header:
+
+```
+accept-language=locale
+```
+
+Alternatively, you can use specific locale with the `World` Facade `setLocale('locale')` helper method. Example: 
+
+```php
+World::setLocale('zh')->countries();
+```
+
+### Schema
+
+<p><img src="./schema.jpg" width="800px" /></p>
+
+### Configuration  
+The configuration of the world package is in the [`world.php` config file](/config/world.php).  
+If you are upgrading from a previous version, you should consider re-publishing the file by issuing:
+
+```bash
+php artisan vendor:publish --tag=world --force
+```
+
+#### Customizing database connection
+
+By default, this package uses the default database connection, but it's possible to customize it
+using the `WORLD_DB_CONNECTION` variable in your `.env` file.
+
+### Countries restrictions
+Countries can be restricted while seeding the database either by adding the ISO2 country codes in the `allowed_countries` or `disallowed_countries` array lists.  
+
+#### Supported Locales  
+A list of the accepted locales which relate to the localized [`lang/` files](/resources/lang).
+
+#### Modules enablement  
+The states, cities, timezones, currencies and languages modules can be optionally disabled.    
+Please note that the cities module depends on the states module.  
+
+#### Routes  
+If you don't wish to use the packages as an API service, you can disable all the routes by assigning `false` to `routes`.  
+
+#### Migrations  
+It offers the ability to enable or disable the database fields.  
+When changing this configuration the database should be dropped and the seeder should be re-run.  
+
+### Testing  
+
+Requirements  
+- The database is seeded.
+- The database connection is defined in the .env file. 
+
+Browse to the package root folder and run:
+
+```bash
+composer install # installs the package dev dependencies
+composer test
+```
+
+`* optional`
