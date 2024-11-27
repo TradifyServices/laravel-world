@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Currency;
+use App\Models\ExchangeRate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
@@ -27,20 +28,29 @@ class CurrencyController extends Controller
             $isValidCurrency = Currency::whereCode($code)->first();
             if ($isValidCurrency) {
                 $res = Http::get("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/{$code}.json");
-                if ($res->status() == 201) {
-                    $data = $res->json($code);
-                    $isValidCurrency->exchange_rate =$data;
-                    $isValidCurrency->save();
+                if ($res->status() == 200) {
+                    $data=$res->json();
+                    $exchange_rate = $data[$code];
+                    $date=$data['date'];
+                    $ExchangeRate = ExchangeRate::updateOrCreate([
+                        'code' => $code,
+                        'date' => $date
+                    ],[
+                        'currency_id' => $isValidCurrency->id,
+                        'exchange_rate' => $exchange_rate
+                    ]);
+
                     return response()->json([
                         'status' => 'success',
                         'result' => 'Currency exchange rate fetched successfully',
-                        'data' => json_decode(json_encode($isValidCurrency->exchange_rate))
+                        'data' => json_decode(json_encode($ExchangeRate->exchange_rate))
                     ]);
                 } else {
+                    $ExchangeRate = ExchangeRate::whereCode($code)->whereDate( date('Y-m-d'))->first();
                     return response()->json([
-                        'status' => 'error',
+                        'status' => 'success',
                         'message' => 'Currency exchange rate fetched successfully',
-                        'data' => json_decode(json_encode($isValidCurrency->exchange_rate))
+                        'data' => json_decode(json_encode($ExchangeRate->exchange_rate))
                     ]);
                 }
 
