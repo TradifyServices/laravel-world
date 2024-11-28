@@ -6,11 +6,14 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "darkaonline/l5-swagger": "^8.6",
+        "doctrine/annotations": "^2.0",
         "intervention/image": "^3.9",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
-        "nnjeim/world": "^1.1"
+        "nnjeim/world": "^1.1",
+        "zircote/swagger-php": "^4.11"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -1,0 +1,145 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "World API Documentation",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api"
+        }
+    ],
+    "paths": {
+        "/currency-exchange": {
+            "post": {
+                "tags": [
+                    "Currency"
+                ],
+                "summary": "Fetch and store currency exchange rate",
+                "operationId": "currencyExchange",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "description": "Currency code to fetch the exchange rate for",
+                                        "type": "string",
+                                        "example": "usd"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Currency exchange rate fetched successfully"
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Invalid currency code"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/process-image": {
+            "post": {
+                "tags": [
+                    "Image Processing"
+                ],
+                "summary": "Process an uploaded image",
+                "description": "Handles the image upload, optional resizing, and format conversion based on provided filters.",
+                "operationId": "processImage",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "image"
+                                ],
+                                "properties": {
+                                    "image": {
+                                        "description": "The image file to upload.",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "filters": {
+                                        "description": "Optional filters for resizing and format conversion.",
+                                        "properties": {
+                                            "width": {
+                                                "description": "The width to resize the image to (optional).",
+                                                "type": "integer"
+                                            },
+                                            "height": {
+                                                "description": "The height to resize the image to (optional).",
+                                                "type": "integer"
+                                            },
+                                            "type": {
+                                                "description": "The desired image format after processing (optional).",
+                                                "type": "string",
+                                                "enum": [
+                                                    "jpeg",
+                                                    "jpg",
+                                                    "png",
+                                                    "gif",
+                                                    "webp"
+                                                ]
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "204": {
+                        "description": "No content"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Resource not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Currency",
+            "description": "Currency"
+        },
+        {
+            "name": "Image Processing",
+            "description": "Image Processing"
+        }
+    ]
+}
